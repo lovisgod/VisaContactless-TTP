@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="item_color">#aaaaaa</color>
+    <color name="nav_color">#1a1f71</color>
+    <color name="status_color">#1946BA</color>
+    <color name="visa_accent">#ffbf00</color>
+    <color name="visa_accent2">#f8a117</color>
+    <color name="visa_accent_highlight">#CAffbf00</color>
+    <color name="visa_primary">#1c4ecf</color>
+    <color name="visa_primary_dark">#242b9b</color>
+    <color name="visa_secondary">#DCDCDC</color>
+    <color name="visa_text_dark">#000000</color>
+</resources>

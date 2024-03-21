@@ -1,0 +1,202 @@
+
+
+
+-keeppackagenames com.visa.vac.tc.utils,com.e.d,com.visa.vac.tc.emvconverter,com.visa.vac.tc,com.visa.vac.tc.session
+
+
+
+
+-keep class com.e.d.performTransaction {
+    <init>(java.io.InputStream, int[], byte[], int, boolean, int);
+}
+
+-keep class com.e.d.clear {
+    <init>(java.io.InputStream, int[], int, byte[], int, int);
+}
+
+-keep class com.e.d.ContactlessKernel {
+    int BuildConfig;    java.lang.Object ContactlessConfiguration;}
+
+-keepclassmembers,allowoptimization,allowobfuscation class com.visa.app.ttpkernel.ContactlessKernel$5 {
+    <init>();
+}
+
+-keepclassmembers,allowoptimization,allowobfuscation class com.visa.app.ttpkernel.ContactlessKernel$2 {
+    <init>();
+}
+
+-keep class com.visa.vac.tc.ContactlessConfiguration$2 {
+    <init>(com.visa.vac.tc.emvconverter.Constants);
+}
+
+-keep class com.visa.vac.tc.ContactlessConfiguration$4 {
+    <init>(com.visa.vac.tc.emvconverter.Constants);
+}
+
+-keep class com.visa.vac.tc.VACThinClient
+
+-keepclassmembers,allowoptimization,allowobfuscation class com.visa.vac.tc.VACThinClient {
+    <init>();
+}
+
+-keep class com.visa.vac.tc.VACThinClient$TransactionCallback {
+    void onComplete(int, com.visa.vac.tc.emvconverter.Transaction);
+    void onProgress(int, com.visa.vac.tc.emvconverter.Transaction);
+}
+
+-keep class com.visa.vac.tc.emvconverter.ActionEngine {
+    java.lang.String getActionID();
+    java.lang.String getActionType();
+    java.lang.String getScriptAlias();
+}
+
+-keep class com.visa.vac.tc.emvconverter.ActionTable {
+    int getInterfaceID();
+    java.lang.String getSvID();
+    android.util.ArrayMap getMap();
+}
+
+-keep class com.visa.vac.tc.emvconverter.CAL {
+    int commandState;    int calTxnState;    <init>(com.visa.vac.tc.emvconverter.CAL$CALListener);
+    void initDefaultData();
+    void setCurrentTime();
+    void setSEMaps(java.lang.Object[]);
+    void setLocalConfigMaps(android.util.ArrayMap);
+    void setScriptDefaults(android.util.ArrayMap);
+    boolean parseKiCResponse(java.lang.String, java.lang.String);
+    void setTxnInterface(int);
+    void setTxnInterface(int, boolean);
+    void setTxnAmount(com.visa.vac.tc.emvconverter.Transaction, boolean);
+    java.lang.String runScript(com.visa.vac.tc.emvconverter.EmvReader);
+}
+
+-keep class com.visa.vac.tc.emvconverter.CAL$CALListener
+
+-keep class com.visa.vac.tc.emvconverter.Constants
+
+-keep class com.visa.vac.tc.emvconverter.EmvReader {
+    int getActiveInterface();
+    int getInterfaceType();
+    void sendCancel();
+}
+
+-keep class com.visa.vac.tc.emvconverter.EmvReader$EmvReaderListener
+
+-keep class com.visa.vac.tc.emvconverter.TagDataList {
+    void setDataMapping(android.util.ArrayMap, android.util.ArrayMap, android.util.ArrayMap);
+    void clearCardData(boolean);
+    void storeSecGenData(java.lang.String, java.lang.Object);
+    java.lang.Object getSecGenData(java.lang.String);
+    java.lang.String getSecGenTagMapping(java.lang.String);
+}
+
+-keep class com.visa.vac.tc.emvconverter.Transaction {
+    java.lang.String amount;    java.lang.String transactionType;    int transactionInterface;    boolean eligibleContactless;    boolean activeInterface;    java.lang.String transactionDisplay;    java.lang.String finalStatus;    java.lang.String receipt;    java.lang.String cvm;    java.lang.String transactionSequenceCounter;    com.visa.vac.tc.emvconverter.EmvReader emvReader;}
+
+-keep class com.visa.vac.tc.emvconverter.Utils {
+    java.lang.String getHexString(byte[]);
+    java.lang.String shortToString(short);
+}
+
+-keep class com.visa.vac.tc.emvconverter.XmlReader {
+    <init>();
+    java.lang.Object[] parse(java.lang.String,java.lang.String);
+}
+
+-keep class com.visa.vac.tc.session.VisaTimerTask {
+    <init>(long, long, com.visa.vac.tc.session.VisaTimerTask$TimeoutCallBack);
+}
+
+-keep class com.visa.vac.tc.session.VisaTimerTask$TimeoutCallBack
+
+-keep class com.visa.vac.tc.utils.AssetReader {
+    <init>(android.content.res.AssetManager);
+    java.lang.String getContentsOfFile(java.lang.String);
+}
+
+-keep class com.visa.vac.tc.utils.PreferenceManager {
+    com.visa.vac.tc.utils.PreferenceManager INSTANCE();
+    void putString(java.lang.String, java.lang.String);
+    java.lang.String getString(java.lang.String);
+    void putInt(java.lang.String, int);
+}
+
+-keepclassmembers,allowoptimization,allowobfuscation class com.visa.vac.tc.utils.PreferenceManager {
+    <init>();
+}
+
+-keep class android.app.Activity
+
+-keep class android.content.Context
+
+-keep class android.content.res.AssetManager
+
+-keep class android.os.CountDownTimer
+
+-keep class android.text.TextUtils
+
+-keep class android.util.ArrayMap
+
+-keep class java.io.IOException
+
+-keep class java.io.InputStream
+
+-keep class java.io.UnsupportedEncodingException
+
+-keep class java.lang.Boolean
+
+-keep class java.lang.Class
+
+-keep class java.lang.ClassLoader
+
+-keep class java.lang.ClassNotFoundException
+
+-keep class java.lang.Exception
+
+-keep class java.lang.IllegalArgumentException
+
+-keep class java.lang.Integer
+
+-keep class java.lang.Long
+
+-keep class java.lang.NoSuchMethodException
+
+-keep class java.lang.Number
+
+-keep class java.lang.Object
+
+-keep class java.lang.RuntimeException
+
+-keep class java.lang.String
+
+-keep class java.lang.StringBuilder
+
+-keep class java.lang.Throwable
+
+-keep class java.lang.reflect.AccessibleObject
+
+-keep class java.lang.reflect.Method
+
+-keep class java.security.NoSuchAlgorithmException
+
+-keep class java.util.ArrayList
+
+-keep class java.util.HashMap
+
+-keep class java.util.Iterator
+
+-keep class java.util.Map
+
+-keep class java.util.Map$Entry
+
+-keep class java.util.Set
+
+# Enumerations.
+-keepclassmembers enum  * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep public class com.visa.app.ttpkernel.** {
+    <fields>;    <methods>;
+}
