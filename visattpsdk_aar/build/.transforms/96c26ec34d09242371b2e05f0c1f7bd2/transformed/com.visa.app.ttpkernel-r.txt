@@ -1,0 +1,23 @@
+com.visa.app.ttpkernel
+color item_color
+color nav_color
+color status_color
+color visa_accent
+color visa_accent2
+color visa_accent_highlight
+color visa_primary
+color visa_primary_dark
+color visa_secondary
+color visa_text_dark
+drawable paymenttech
+drawable paywave
+drawable paywave1
+drawable paywave2
+drawable paywave3
+drawable visacards
+drawable visaready
+drawable visastreamer
+drawable visatagline
+id textView1
+layout group
+layout row
