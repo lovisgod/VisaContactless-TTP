@@ -1,9 +1,8 @@
 package com.lovisgod.testVisaTTP
 
-import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
-import com.lovisgod.testVisaTTP.domain.HorizonAppContainer
+import com.lovisgod.testVisaTTP.domain.SoftposAppContainer
 import com.pixplicity.easyprefs.library.Prefs
 
 object SoftApplication {
@@ -19,8 +18,8 @@ object SoftApplication {
     }
 
     object container {
-        var horizonAppContainer = HorizonAppContainer()
-        var horizonPayUseCase = horizonAppContainer.getUseCases()
+        var softposAppContainer = SoftposAppContainer()
+        var horizonPayUseCase = softposAppContainer.getUseCases()
     }
 
 }

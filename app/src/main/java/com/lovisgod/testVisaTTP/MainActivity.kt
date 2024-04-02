@@ -1,23 +1,17 @@
 package com.lovisgod.testVisaTTP
 
-import NFCListener
-import android.annotation.SuppressLint
 import android.app.Application
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
+
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import com.lovisgod.nfcpos.utils.BerTag
+
 
 import com.lovisgod.testVisaTTP.SDKHelper.nfcListener
-import com.lovisgod.testVisaTTP.handlers.Conversions
-import com.lovisgod.testVisaTTP.handlers.KeyBoardClick
-import com.lovisgod.testVisaTTP.handlers.PinKeyPadHandler
+
 import com.lovisgod.testVisaTTP.handlers.network.networkInterface.networkSampleRepo
 import com.lovisgod.testVisaTTP.models.OnlineRespEntity
 import com.lovisgod.testVisaTTP.models.datas.RequestIccData
@@ -28,12 +22,9 @@ import com.lovisgod.testVisaTTP.models.enums.TransactionResultCode
 import com.lovisgod.testVisaTTP.models.uiState.ReadCardStates
 import com.visa.app.ttpkernel.ContactlessConfiguration
 import com.visa.app.ttpkernel.ContactlessKernel
-
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import java.io.IOException
-import java.util.Arrays
-import java.util.HashMap
+
+
 
 
 class MainActivity : AppCompatActivity(), TransactionLogger, ReadCardStates {
@@ -46,7 +37,7 @@ class MainActivity : AppCompatActivity(), TransactionLogger, ReadCardStates {
     var testBtn: AppCompatButton? = null
     var view: View?  = null
 
-    val useCases = SoftApplication.container.horizonAppContainer.getUseCases()
+    val useCases = SoftApplication.container.softposAppContainer.getUseCases()
 
 
     // Supported AIDs
@@ -60,30 +51,15 @@ class MainActivity : AppCompatActivity(), TransactionLogger, ReadCardStates {
         view = findViewById(R.id.keypad_layout)
         pintext = findViewById(R.id.pinText)
 
-//        contactlessKernel = ContactlessKernel.getInstance(applicationContext);
-//
-//        // Get the ContactlessConfiguration instance
-//        contactlessConfiguration = ContactlessConfiguration.getInstance()
-
-
-//        mainLog!!.textSize = 12f
-//        mainLog!!.gravity = Gravity.LEFT
-//        mainLog?.setText("")
-
-        // set up nfc adapter and others
 
         setupNfc()
 
 
-//        PinKeyPadHandler.handleKeyButtonClick(this, view!!)
 
         SDKHelper.setPinMode(KeyMode.ISO_0) // change to dukpt when testing dukpt
 
-//        setupNfc()
 
         doDummyPinKey() //this is dummy pinkey loading for the purpose testing pinkey injection
-
-        // For testing purposes, perform 10 transactions
 
 
         testBtn?.setOnClickListener {
@@ -95,7 +71,7 @@ class MainActivity : AppCompatActivity(), TransactionLogger, ReadCardStates {
                    cardAcceptorNameLocation = "ISW Visa sample    Oko Awo Street"
                ))
                 useCases.emvSetIsKimonoUseCase.invoke(false)
-                useCases.emvPayUseCase.invoke("100".toInt().toLong(), this@MainActivity, this@MainActivity)
+                useCases.emvPayUseCase.invoke("100".toInt().toLong(), this@MainActivity, this@MainActivity.applicationContext)
 
            }
         }
@@ -153,7 +129,7 @@ class MainActivity : AppCompatActivity(), TransactionLogger, ReadCardStates {
     override fun onCardRead(cardType: String, cardNo: String) {
         super.onCardRead(cardType, cardNo)
        runBlocking {
-           useCases.continueTransactionUseCase.invoke(true)
+           useCases.continueTransactionUseCase.invoke(true, this@MainActivity)
        }
     }
 

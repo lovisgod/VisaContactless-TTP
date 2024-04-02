@@ -20,9 +20,11 @@ class AesCryptoManager {
     }
 // cypher basicaly helps to tell how we want to encrypt and decrypt our data, the algorithm, block type, padding, transformation.
 
-    private val encryptCypher = Cipher.getInstance(TRANSFORMATION).apply {
-        init(Cipher.ENCRYPT_MODE, getKey()) // specify the usefulness of the cypher you are creating
-        // amd the key to use for the encryption
+    private fun encryptCypher(keyx: SecretKey): Cipher? {
+       return Cipher.getInstance(TRANSFORMATION).apply {
+            init(Cipher.ENCRYPT_MODE, keyx) // specify the usefulness of the cypher you are creating
+            // amd the key to use for the encryption
+        }
     }
 
     private fun getDecryptCipherForIv(iv: ByteArray): Cipher {
@@ -39,15 +41,16 @@ class AesCryptoManager {
     }
 
     fun encrypt(bytes: ByteArray, outputStream: OutputStream): ByteArray {
-        val encryptedBytes = encryptCypher.doFinal(bytes)
+        val encrypter = encryptCypher(getKey())
+        val encryptedBytes = encrypter?.doFinal(bytes)
         outputStream.use { // this open the stream for use and close it after being used
-            it.write(encryptCypher.iv.size) // this tells the size of the iv to write
-            it.write(encryptCypher.iv) // this writes the iv
-            it.write(encryptedBytes.size) // this tells the size of the encrypted bytes
+            it.write(encrypter!!.iv.size) // this tells the size of the iv to write
+            it.write(encrypter.iv) // this writes the iv
+            it.write(encryptedBytes!!.size) // this tells the size of the encrypted bytes
             it.write(encryptedBytes) //this writes the encrypted bytes to the stream
         }
 
-        return encryptedBytes
+        return encryptedBytes!!
     }
 
     fun decrypt(inputStream: InputStream): ByteArray {

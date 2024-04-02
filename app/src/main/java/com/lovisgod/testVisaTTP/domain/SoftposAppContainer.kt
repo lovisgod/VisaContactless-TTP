@@ -1,6 +1,5 @@
 package com.lovisgod.testVisaTTP.domain
 
-import com.lovisgod.iswhpay.domain.HorizonRepository
 import com.lovisgod.testVisaTTP.data.DataSource
 import com.lovisgod.testVisaTTP.data.EmvDataKeyManager
 import com.lovisgod.testVisaTTP.data.EmvPaymentHandler
@@ -15,12 +14,12 @@ import com.lovisgod.testVisaTTP.domain.use_cases.PrintBitMapUseCase
 import com.lovisgod.testVisaTTP.domain.use_cases.SetPinKeyUseCase
 import com.lovisgod.testVisaTTP.domain.use_cases.SetTerminalConfigUseCase
 
-class HorizonAppContainer {
+class SoftposAppContainer {
 
     val emvDataKeyManager = EmvDataKeyManager()
-    val emvPaymentHandler = EmvPaymentHandler()
+    val emvPaymentHandler = EmvPaymentHandler.getInstance()
     private val dataSource = DataSource(emvDataKeyManager, emvPaymentHandler)
-    private val repository = HorizonRepository(dataSource)
+    private val repository = SoftposRepository(dataSource)
 
 
     fun getUseCases(): AllUseCases {

@@ -3,6 +3,7 @@ package com.lovisgod.testVisaTTP.data
 import android.content.Context
 import android.graphics.Bitmap
 import com.lovisgod.iswhpay.ui.uiState.PrintingState
+import com.lovisgod.testVisaTTP.MainActivity
 import com.lovisgod.testVisaTTP.models.datas.IswHpCodes
 import com.lovisgod.testVisaTTP.models.datas.TerminalInfo
 import com.lovisgod.testVisaTTP.models.uiState.ReadCardStates
@@ -49,9 +50,9 @@ class DataSource(val emvDataKeyManager: EmvDataKeyManager, val emvPaymentHandler
     }
 
 
-    suspend fun continueTransaction(condition: Boolean) {
+    suspend fun continueTransaction(condition: Boolean, activity: Context) {
         try {
-            emvPaymentHandler.continueTransaction(condition)
+            emvPaymentHandler.continueTransaction(condition, activity)
         } catch (e: Exception) {
             e.printStackTrace()
             IswHpCodes.GENERAL_EMV_EXCEPTION

@@ -2,6 +2,7 @@ package com.lovisgod.testVisaTTP.data
 
 import android.R
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.os.RemoteException
@@ -13,6 +14,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.isw.pinencrypter.Converter.GetPinBlock
 import com.lovisgod.nfcpos.utils.BerTag
 import com.lovisgod.testVisaTTP.SDKHelper
@@ -32,10 +34,25 @@ import com.visa.app.ttpkernel.ContactlessKernel
 import com.visa.app.ttpkernel.TtpOutcome
 import com.visa.app.ttpkernel.Version
 import com.visa.vac.tc.emvconverter.Utils
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.util.Arrays
 
-class EmvPaymentHandler : TransactionLogger, KeyBoardClick {
+class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick {
+
+    companion object {
+
+        @SuppressLint("StaticFieldLeak")
+        @Volatile
+        private var instance: EmvPaymentHandler? = null
+
+        fun getInstance(): EmvPaymentHandler {
+            return instance ?: synchronized(this) {
+                instance ?: EmvPaymentHandler().also { instance = it }
+            }
+        }
+    }
 
     private var readCardStates: ReadCardStates?  = null
     var context: Context? = null
@@ -53,7 +70,8 @@ class EmvPaymentHandler : TransactionLogger, KeyBoardClick {
     )
 
     fun initialize(context: Context) {
-
+        println("this got here to set context")
+        this.context = context
     }
 
     fun setIsKimono(isKimono: Boolean) {
@@ -62,14 +80,17 @@ class EmvPaymentHandler : TransactionLogger, KeyBoardClick {
     }
 
     fun pay (amount: String, readCardStates: ReadCardStates, context: Context) {
-        this.context = context
+//        this.context = context
         contactlessKernel = ContactlessKernel.getInstance(context)
         this.readCardStates = readCardStates
         doTransaction(amount)
     }
 
-    fun continueTransaction(condition: Boolean) {
+    fun continueTransaction(condition: Boolean, activity: Context) {
+        println("continue transaction got here")
         this.continueTransaction = true
+//        this.context = activity
+
     }
 
     fun stopTransaction() {
@@ -194,23 +215,32 @@ class EmvPaymentHandler : TransactionLogger, KeyBoardClick {
             println("selected aid === $selectedAid")
         } catch (e: IOException) {
             e.printStackTrace()
+            this.readCardStates?.onTransactionFailed("Transaction declined offline. Kindly try again with another interface")
         }
         if (selectedAid != null) {
+            this@EmvPaymentHandler.readCardStates?.onCardDetected()
+
+            Thread.sleep(500)
             // find way to get the card pan
             this@EmvPaymentHandler.readCardStates?.onCardRead("Visa", "")
             val selectedAccountType = this@EmvPaymentHandler.readCardStates?.onSelectAccountType()
 
-            if (selectedAccountType != null) {
-                while (continueTransaction) {
-                    // Get the ContactlessConfiguration instance
-                    contactlessConfiguration = ContactlessConfiguration.getInstance()
+            println("So select application got here :::::: $selectedAccountType")
 
-                    // Specify the terminal settings for this transaction
-                    val myData = contactlessConfiguration?.terminalData
-                    myData?.set("9F02", "100".encodeToByteArray())
-                    myData?.set("9C", byteArrayOf(0x00))
-                    myData?.set("4F", selectedAid) // set the selected aid
-                    myData?.set("9F4E", byteArrayOf(
+            if (selectedAccountType != null) {
+                println("So select application not null here")
+//                while (continueTransaction) {
+                println("continue transaction got here here here")
+                // Get the ContactlessConfiguration instance
+                contactlessConfiguration = ContactlessConfiguration.getInstance()
+
+                // Specify the terminal settings for this transaction
+                val myData = contactlessConfiguration?.terminalData
+                myData?.set("9F02", amount.encodeToByteArray())
+                myData?.set("9C", byteArrayOf(0x00))
+                myData?.set("4F", selectedAid) // set the selected aid
+                myData?.set(
+                    "9F4E", byteArrayOf(
                         0x00.toByte(),
                         0x11.toByte(),
                         0x22.toByte(),
@@ -228,179 +258,206 @@ class EmvPaymentHandler : TransactionLogger, KeyBoardClick {
                         0xEE.toByte(),
                         0xFF.toByte()
                     )
-                    )
-                    myData?.set("009C", byteArrayOf(0x20.toByte()))
+                )
+                myData?.set("009C", byteArrayOf(0x20.toByte()))
 
 //                    this@EmvPaymentHandler.readCardStates?.onCardDetected()
 
-                    // Call TTP Kernel performTransaction
-                    val contactlessResult =
-                        contactlessKernel!!.performTransaction(SDKHelper.newNfcTransceiver, contactlessConfiguration)
+                // Call TTP Kernel performTransaction
+                context?.let {
+                    ContextCompat.getMainExecutor(it).execute {
+                        val contactlessResult =
+                            contactlessKernel!!.performTransaction(
+                                SDKHelper.newNfcTransceiver,
+                                contactlessConfiguration
+                            )
 
-                    // Check the transaction outcome
-                    val outcome = contactlessResult.finalOutcome
+                        // Check the transaction outcome
+                        val outcome = contactlessResult.finalOutcome
 
-                    when (outcome) {
-                        TtpOutcome.COMPLETED -> {
-                            this.log("Online Approval requested")
-                            // Display the TTP Kernel version
-                            this.log("ContactlessResult.getKernelData: getVersion")
-                            contactlessKernel!!.kernelData
+                        when (outcome) {
+                            TtpOutcome.COMPLETED -> {
+                                this.log("Online Approval requested")
+                                // Display the TTP Kernel version
+                                this.log("ContactlessResult.getKernelData: getVersion")
+                                contactlessKernel!!.kernelData
 
-                            // Display the TTP Kernel data
-                            val version = contactlessKernel!!.kernelData
-                            var key: String
-                            var value: String
-                            var src: String
-                            for ((key1, value1)  in version) {
-                                if (value1 != null) {
-                                    key = key1 as String
-                                    value = Utils.getHexString(value1) as String
-                                    this.log("$key:$value")
+                                // Display the TTP Kernel data
+                                val version = contactlessKernel!!.kernelData
+                                var key: String
+                                var value: String
+                                var src: String
+                                for ((key1, value1) in version) {
+                                    if (value1 != null) {
+                                        key = key1 as String
+                                        value = Utils.getHexString(value1) as String
+                                        this.log("$key:$value")
+                                    }
                                 }
-                            }
-                            // Display the transaction results
-                            this.log("""
+                                // Display the transaction results
+                                this.log(
+                                    """
                                      TLV data format 
                                      card data
                                      ContactlessResult.getData:
-                            """.trimIndent())
-                            val cardData = contactlessResult.data
-                            transactionContactlessResult = contactlessResult.data
-                            for ((key1, value1) in cardData) {
-                                key = key1 as String
-                                if (value1 != null) {
-                                    value = Utils.getHexString(value1 as ByteArray?) as String
-                                    this.log("""
-                                        $key:$value
-                                     """.trimIndent())
-                                }
-                            }
-
-                            this.log(" ContactlessResult.getInternalData():")
-
-                            val internalData = contactlessResult.internalData
-                            for ((key1, value1) in internalData) {
-                                if (value1 != null) {
-                                    key = key1 as String
-                                    value = Utils.getHexString(value1) as String
-                                    this.log("$key:$value")
-                                    //'DF01' Reader CVM Required Limit
-                                    //'DF03' CVM Kernel Outcome
-                                    //	'00' = CVM capture not required
-                                    //	'01' = Signature required
-                                    //	'02' = Online PIN required
-                                    //	'03' = CVM processing resulted in transaction decline
-                                }
-                            }
-
-
-
-                            // Display the last APDU sent & the last SW received by the TTP Kernel
-                            if (contactlessResult.lastApdu != null && contactlessResult.lastSW != null) {
-                                this.log("Last APDU Command")
-                                this.log(Utils.getHexString(contactlessResult.lastApdu))
-                                this.log("Last APDU Response")
-                                this.log(Utils.getHexString(contactlessResult.lastSW))
-                            }
-                            val df03tlv = internalData["DF03"]?.let { Conversions.parseBERTLV(it) }
-
-                            println(df03tlv?.find(BerTag("DF03"))?.getHexValue())
-
-                            DF03 = df03tlv?.find(BerTag("DF03"))?.getHexValue().toString()
-
-                            println("CVM kernel outcome ::: $DF03")
-
-                            if (DF03.isNotEmpty() && (DF03 == "02")) {
-                                this@EmvPaymentHandler.readCardStates?.onPinInput()
-                                // display pin pad
-                                val inflater = LayoutInflater.from(this.context)
-                                val view =
-                                    inflater.inflate(com.lovisgod.testVisaTTP.R.layout.keypad, null) as ConstraintLayout
-
-
-                                val keyBoardView = view.findViewById<View>(com.lovisgod.testVisaTTP.R.id.layoutKeyboard)
-
-
-                                dialog = Dialog(this.context!!, R.style.Theme_Translucent_NoTitleBar)
-                                dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                                dialog!!.setContentView(view)
-                                val window: Window? = dialog!!.window
-                                val wlp = window?.attributes
-
-                                wlp?.gravity = Gravity.BOTTOM
-                                wlp?.flags = wlp?.flags?.and(WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv())
-                                window?.setAttributes(wlp)
-                                dialog?.window?.setLayout(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT
+                            """.trimIndent()
                                 )
-                                PinKeyPadHandler.handleKeyButtonClick(this, view)
-                                window?.setGravity(Gravity.BOTTOM)
-                                this.continueTransaction = false
-                                dialog?.show()
-
-                            }else if (DF03.isNotEmpty() && (DF03 == "00")) {
-                                transactionContactlessResult?.let {
-                                    val iccData = SDKHelper.getTransactionData(it, EmvPinData(ksn = "", CardPinBlock = ""))
-                                    var responseEntity = iccData?.let { it1 ->
-                                        this@EmvPaymentHandler.readCardStates?.sendTransactionOnline(
-                                            it1
+                                val cardData = contactlessResult.data
+                                transactionContactlessResult = contactlessResult.data
+                                for ((key1, value1) in cardData) {
+                                    key = key1 as String
+                                    if (value1 != null) {
+                                        value = Utils.getHexString(value1 as ByteArray?) as String
+                                        this.log(
+                                            """
+                                        $key:$value
+                                     """.trimIndent()
                                         )
                                     }
                                 }
 
-                            }
-                            else if (DF03.isNotEmpty() && (DF03 == "01")) {
-                                transactionContactlessResult?.let {
-                                    val iccData = SDKHelper.getTransactionData(it, EmvPinData(ksn = "", CardPinBlock = ""))
-                                    var responseEntity = iccData?.let { it1 ->
-                                        this@EmvPaymentHandler.readCardStates?.sendTransactionOnline(
-                                            it1
-                                        )
+                                this.log(" ContactlessResult.getInternalData():")
+
+                                val internalData = contactlessResult.internalData
+                                for ((key1, value1) in internalData) {
+                                    if (value1 != null) {
+                                        key = key1 as String
+                                        value = Utils.getHexString(value1) as String
+                                        this.log("$key:$value")
+                                        //'DF01' Reader CVM Required Limit
+                                        //'DF03' CVM Kernel Outcome
+                                        //	'00' = CVM capture not required
+                                        //	'01' = Signature required
+                                        //	'02' = Online PIN required
+                                        //	'03' = CVM processing resulted in transaction decline
                                     }
                                 }
-                            } else {
-                                println("this is the cvm result :::: $DF03")
-                                // declined
-                                this.readCardStates?.onTransactionFailed("Transaction decline with cvm decline.")
+
+
+                                // Display the last APDU sent & the last SW received by the TTP Kernel
+                                if (contactlessResult.lastApdu != null && contactlessResult.lastSW != null) {
+                                    this.log("Last APDU Command")
+                                    this.log(Utils.getHexString(contactlessResult.lastApdu))
+                                    this.log("Last APDU Response")
+                                    this.log(Utils.getHexString(contactlessResult.lastSW))
+                                }
+                                val df03tlv =
+                                    internalData["DF03"]?.let { Conversions.parseBERTLV(it) }
+
+                                println(df03tlv?.find(BerTag("DF03"))?.getHexValue())
+
+                                DF03 = df03tlv?.find(BerTag("DF03"))?.getHexValue().toString()
+
+                                println("CVM kernel outcome ::: $DF03")
+
+                                if (DF03.isNotEmpty() && (DF03 == "02")) {
+                                    this@EmvPaymentHandler.readCardStates?.onPinInput()
+
+                                    println("context is null :::: ${this.context == null}")
+                                    // display pin pad
+                                    val inflater = LayoutInflater.from(this.context)
+                                    val view =
+                                        inflater.inflate(
+                                            com.lovisgod.testVisaTTP.R.layout.keypad,
+                                            null
+                                        ) as ConstraintLayout
+
+
+                                    val keyBoardView =
+                                        view.findViewById<View>(com.lovisgod.testVisaTTP.R.id.layoutKeyboard)
+
+
+                                    dialog =
+                                        Dialog(this.context!!, R.style.Theme_Translucent_NoTitleBar)
+                                    dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                                    dialog!!.setContentView(view)
+                                    val window: Window? = dialog!!.window
+                                    val wlp = window?.attributes
+
+                                    wlp?.gravity = Gravity.BOTTOM
+                                    wlp?.flags =
+                                        wlp?.flags?.and(WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv())
+                                    window?.setAttributes(wlp)
+                                    dialog?.window?.setLayout(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT
+                                    )
+                                    PinKeyPadHandler.handleKeyButtonClick(this, view)
+                                    window?.setGravity(Gravity.BOTTOM)
+                                    this.continueTransaction = false
+                                    dialog?.show()
+
+                                } else if (DF03.isNotEmpty() && (DF03 == "00")) {
+                                    transactionContactlessResult?.let {
+                                        val iccData = SDKHelper.getTransactionData(
+                                            it,
+                                            EmvPinData(ksn = "", CardPinBlock = "")
+                                        )
+                                        var responseEntity = iccData?.let { it1 ->
+                                            this@EmvPaymentHandler.readCardStates?.sendTransactionOnline(
+                                                it1
+                                            )
+                                        }
+                                    }
+
+                                } else if (DF03.isNotEmpty() && (DF03 == "01")) {
+                                    transactionContactlessResult?.let {
+                                        val iccData = SDKHelper.getTransactionData(
+                                            it,
+                                            EmvPinData(ksn = "", CardPinBlock = "")
+                                        )
+                                        var responseEntity = iccData?.let { it1 ->
+                                            this@EmvPaymentHandler.readCardStates?.sendTransactionOnline(
+                                                it1
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    println("this is the cvm result :::: $DF03")
+                                    // declined
+                                    this.readCardStates?.onTransactionFailed("Transaction decline with cvm decline.")
+                                }
+
                             }
 
-                        }
-
-                        TtpOutcome.DECLINED -> {
-                            this.log("Transaction Declined")
-                            this.readCardStates?.onTransactionFailed("Transaction declined offline. Kindly try again with another interface")
-                        }
-
-                        TtpOutcome.ABORTED -> {
-                            this.log("Transaction terminated")
-                            this.readCardStates?.onTransactionFailed("Transaction terminated. Kindly try again with another interface")
-                        }
-
-                        TtpOutcome.TRYNEXT ->{
-                            this.log("PPSE:Try Next Application")
-                            // Check TTP Kernel transaction outcome
-                            selectedAid = if (outcome == TtpOutcome.TRYNEXT) {
-                                // Perform another transaction using next AID in the list
-                                ppseManager.nextCandidate()
-                            } else {
-                                null
+                            TtpOutcome.DECLINED -> {
+                                this.log("Transaction Declined")
+                                this.readCardStates?.onTransactionFailed("Transaction declined offline. Kindly try again with another interface")
                             }
+
+                            TtpOutcome.ABORTED -> {
+                                this.log("Transaction terminated")
+                                this.readCardStates?.onTransactionFailed("Transaction terminated. Kindly try again with another interface")
+                            }
+
+                            TtpOutcome.TRYNEXT -> {
+                                this.log("PPSE:Try Next Application")
+                                // Check TTP Kernel transaction outcome
+                                selectedAid = if (outcome == TtpOutcome.TRYNEXT) {
+                                    // Perform another transaction using next AID in the list
+                                    ppseManager.nextCandidate()
+                                } else {
+                                    null
+                                }
+                            }
+
+                            TtpOutcome.SELECTAGAIN -> {
+                                this.log("GPO Returned 6986. Application Try Again.")
+                                this.readCardStates?.onTransactionFailed("Transaction declined. Kindly try again with another interface")
+                            }
+
+                            else -> {}
                         }
 
-                        TtpOutcome.SELECTAGAIN -> {
-                            this.log("GPO Returned 6986. Application Try Again.")
-                            this.readCardStates?.onTransactionFailed("Transaction declined. Kindly try again with another interface")
-                        }
-
-                        else -> {}
                     }
+
+//                }
 
                 }
 
             }
-
+        } else {
+            this.readCardStates?.onTransactionFailed("Transaction declined offline. Kindly try again with another interface")
         }
     }
 
