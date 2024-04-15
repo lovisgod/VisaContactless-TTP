@@ -21,242 +21,201 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <GridLayout
         android:id="@+id/layoutKeyboard"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:columnCount="3"
         android:layout_marginTop="@dimen/dimen_32dp"
         android:layout_marginBottom="@dimen/dimen_8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pin_text"
-        app:layout_constraintBottom_toTopOf="@id/btnConfirm"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/btn1"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/btn_cal_1"
+            android:layout_margin="@dimen/_5dp"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toStartOf="@id/btn2"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="30sp"/>
 
         <TextView
             android:id="@+id/btn2"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/btn_cal_2"
+            android:layout_margin="@dimen/_5dp"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn1"
-            app:layout_constraintEnd_toStartOf="@id/btn3"
-            app:layout_constraintStart_toEndOf="@id/btn1"
-            app:layout_constraintTop_toTopOf="@id/btn1" />
+            android:textSize="30sp"/>
 
         <TextView
             android:id="@+id/btn3"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/btn_cal_3"
+            android:layout_margin="@dimen/_5dp"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn2"
-            app:layout_constraintTop_toTopOf="@id/btn1" />
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/btn4"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
+            android:layout_margin="@dimen/_5dp"
             android:gravity="center"
             android:text="@string/btn_cal_4"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toStartOf="@id/btn5"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn1" />
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/btn5"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
+            android:layout_margin="@dimen/_5dp"
             android:gravity="center"
             android:text="@string/btn_cal_5"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
             android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn4"
-            app:layout_constraintEnd_toStartOf="@id/btn6"
-            app:layout_constraintStart_toEndOf="@id/btn4"
-            app:layout_constraintTop_toTopOf="@id/btn4" />
+            />
 
         <TextView
             android:id="@+id/btn6"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
+            android:layout_margin="@dimen/_5dp"
             android:gravity="center"
             android:text="@string/btn_cal_6"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn5"
-            app:layout_constraintTop_toTopOf="@id/btn4" />
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/btn7"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
+            android:layout_margin="@dimen/_5dp"
             android:gravity="center"
             android:text="@string/btn_cal_7"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
             android:textSize="30sp"
-            app:layout_constraintEnd_toStartOf="@id/btn8"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn4" />
+            />
 
         <TextView
             android:id="@+id/btn8"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
+            android:layout_margin="@dimen/_5dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/btn_cal_8"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn7"
-            app:layout_constraintEnd_toStartOf="@id/btn9"
-            app:layout_constraintStart_toEndOf="@id/btn7"
-            app:layout_constraintTop_toTopOf="@id/btn7" />
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/btn9"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
+            android:layout_margin="@dimen/_5dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/btn_cal_9"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
             android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn7"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn8"
-            app:layout_constraintTop_toTopOf="@id/btn7" />
+            />
 
-<!--        <TextView-->
-<!--            android:id="@+id/btn_dot"-->
-<!--            android:layout_width="0.0dip"-->
-<!--            android:layout_height="75.0dip"-->
-<!--            android:fontFamily="sans-serif"-->
-<!--            android:gravity="center"-->
-<!--            android:text="."-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="24.0sp"-->
-<!--            android:textStyle="bold"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/btn0"-->
-<!--            app:layout_constraintEnd_toStartOf="@id/btn0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/btn7"-->
-<!--            app:layout_constraintTop_toTopOf="@id/btn0" />-->
+    </GridLayout>
+
+    <GridLayout
+        android:id="@+id/down_key_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:layout_marginBottom="@dimen/dimen_8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutKeyboard"
+        app:layout_constraintBottom_toTopOf="@id/btnConfirmx"
+        app:layout_constraintStart_toStartOf="parent">
+
 
         <TextView
-            android:id="@+id/btn_clear"
-            android:layout_width="0.0dip"
+            android:id="@+id/btnBack"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="60dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
-            android:text="@string/clear"
+            android:layout_margin="@dimen/_5dp"
+            android:text="@string/left_arrow_icon_string"
             android:textStyle="normal"
-            android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
-            android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn0"
-            app:layout_constraintEnd_toStartOf="@id/btn0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn7"
-            app:layout_constraintTop_toTopOf="@id/btn0" />
-
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="0.0dip"
-            android:layout_height="0.0dip"
-            android:padding="24.0dip"
-            android:textStyle="normal"
-            android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
-            android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@id/btn0"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn0"
-            app:layout_constraintTop_toTopOf="@id/btn0"
-            app:srcCompat="@drawable/icon_open_delete" />
+            android:background="@drawable/isw_bg_card_red"
+            android:textColor="@color/white"
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/btn0"
-            android:layout_width="0.0dip"
+            android:layout_width="@dimen/_110dp"
             android:layout_height="@dimen/_60dp"
             android:fontFamily="sans-serif"
+            android:layout_margin="@dimen/_5dp"
             android:gravity="center"
             android:text="@string/btn_cal_0"
             android:textStyle="normal"
             android:background="@drawable/isw_bg_card"
-            android:elevation="@dimen/_10dp"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toStartOf="@id/btn9"
-            app:layout_constraintStart_toEndOf="@id/btn7"
-            app:layout_constraintTop_toBottomOf="@id/btn7" />
+            android:textSize="30sp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/btnConfirm"
+            android:layout_width="@dimen/_110dp"
+            android:layout_height="60dp"
+            android:layout_margin="@dimen/_5dp"
+            android:gravity="center"
+            android:fontFamily="sans-serif"
+            android:background="@drawable/isw_bg_card_green"
+            android:textColor="@color/white"
+            android:textStyle="normal"
+            android:textSize="30sp"
+            android:text="@string/enter_icon_string"
+            app:srcCompat="@drawable/icon_open_delete" />
+
+    </GridLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnConfirm"
+        android:id="@+id/btnConfirmx"
         android:layout_width="0.0dip"
         android:layout_height="@dimen/_50dp"
-        android:layout_margin="@dimen/dimen_8dp"
+        android:layout_margin="@dimen/_30dp"
+        android:visibility="gone"
         android:background="@drawable/button_rounded_bg_navy_blue"
         android:elevation="@dimen/_10dp"
         android:fontFamily="sans-serif"
@@ -273,6 +232,6 @@
         android:id="@+id/groupKeyboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="layoutKeyboard,btnConfirm" />
+        app:constraint_referenced_ids="layoutKeyboard" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

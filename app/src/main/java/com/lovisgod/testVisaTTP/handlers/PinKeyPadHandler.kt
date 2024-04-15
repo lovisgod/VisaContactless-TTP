@@ -21,7 +21,7 @@ object PinKeyPadHandler {
         view.findViewById<TextureView>(R.id.btn9).clickThis { keyBoardClick.onNumClick("9") }
         view.findViewById<TextureView>(R.id.btn0).clickThis { keyBoardClick.onNumClick("0") }
         view.findViewById<ImageView>(R.id.btnBack).clickThis { keyBoardClick.onBackSpace() }
-        view.findViewById<ImageView>(R.id.btn_clear).clickThis { keyBoardClick.onClear() }
+//        view.findViewById<ImageView>(R.id.btn_clear).clickThis { keyBoardClick.onClear() }
         view.findViewById<AppCompatButton>(R.id.btnConfirm).clickThis { keyBoardClick.onSubmitButtonClick() }
 
     }

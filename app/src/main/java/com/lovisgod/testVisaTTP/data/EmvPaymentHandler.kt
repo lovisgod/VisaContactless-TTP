@@ -12,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.GridLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -21,10 +23,14 @@ import com.lovisgod.testVisaTTP.SDKHelper
 import com.lovisgod.testVisaTTP.SDKHelper.contactlessConfiguration
 import com.lovisgod.testVisaTTP.TransactionLogger
 import com.lovisgod.testVisaTTP.handlers.Conversions
+import com.lovisgod.testVisaTTP.handlers.HexUtil
 import com.lovisgod.testVisaTTP.handlers.KeyBoardClick
 import com.lovisgod.testVisaTTP.handlers.PPSEManager
 import com.lovisgod.testVisaTTP.handlers.PinKeyPadHandler
 import com.lovisgod.testVisaTTP.handlers.StringManipulator
+import com.lovisgod.testVisaTTP.handlers.checkRooted
+import com.lovisgod.testVisaTTP.handlers.isDevMode
+import com.lovisgod.testVisaTTP.handlers.isRunningOnEmulator
 import com.lovisgod.testVisaTTP.models.datas.EmvPinData
 import com.lovisgod.testVisaTTP.models.enums.KeyMode
 import com.lovisgod.testVisaTTP.models.enums.KeyType
@@ -34,10 +40,10 @@ import com.visa.app.ttpkernel.ContactlessKernel
 import com.visa.app.ttpkernel.TtpOutcome
 import com.visa.app.ttpkernel.Version
 import com.visa.vac.tc.emvconverter.Utils
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+
 import java.io.IOException
 import java.util.Arrays
+import kotlin.random.Random
 
 class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick {
 
@@ -80,6 +86,13 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
     }
 
     fun pay (amount: String, readCardStates: ReadCardStates, context: Context) {
+
+        if (isRunningOnEmulator || isDevMode(this.context!!) || checkRooted(this.context!!)) {
+            ContextCompat.getMainExecutor(this.context!!).execute {
+                Toast.makeText(this.context, "Device not supported", Toast.LENGTH_LONG).show()
+            }
+            return
+        }
 //        this.context = context
         contactlessKernel = ContactlessKernel.getInstance(context)
         this.readCardStates = readCardStates
@@ -107,6 +120,31 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
             e.printStackTrace()
         }
 
+    }
+
+    private fun shuffleChildrenOrder(layout: GridLayout): GridLayout {
+        val random = java.util.Random()
+        val children = ArrayList<TextView>()
+
+        // Collect all TextView children
+        for (i in 0 until layout.childCount) {
+            println("got here for shuffling")
+            val view = layout.getChildAt(i)
+            if (view is TextView) {
+                children.add(view)
+            }
+        }
+
+        // Shuffle the order of TextView children
+        children.shuffle(random)
+
+        // Re-add TextView children to the layout in shuffled order
+        layout.removeAllViews()
+        for (child in children) {
+            layout.addView(child)
+        }
+
+        return layout
     }
 
     override fun log(message: String) {
@@ -176,6 +214,8 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
                 }
             }
 
+            clearPinText = ""
+
             // reset nfc field
             SDKHelper.nfcListener?.resetNFCField()
         }
@@ -236,8 +276,8 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
 
                 // Specify the terminal settings for this transaction
                 val myData = contactlessConfiguration?.terminalData
-                myData?.set("9F02", amount.encodeToByteArray())
-                myData?.set("9C", byteArrayOf(0x00))
+                myData?.set("9F02", HexUtil.parseHex(amount))
+                myData?.set("9C", HexUtil.parseHex("00"))
                 myData?.set("4F", selectedAid) // set the selected aid
                 myData?.set(
                     "9F4E", byteArrayOf(
@@ -259,7 +299,7 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
                         0xFF.toByte()
                     )
                 )
-                myData?.set("009C", byteArrayOf(0x20.toByte()))
+                myData?.set("009C", byteArrayOf(0x00.toByte()))
 
 //                    this@EmvPaymentHandler.readCardStates?.onCardDetected()
 
@@ -364,13 +404,18 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
 
 
                                     val keyBoardView =
-                                        view.findViewById<View>(com.lovisgod.testVisaTTP.R.id.layoutKeyboard)
+                                        view.findViewById<GridLayout>(com.lovisgod.testVisaTTP.R.id.layoutKeyboard)
+
+                                    val sKey = shuffleChildrenOrder(keyBoardView)
+
 
 
                                     dialog =
                                         Dialog(this.context!!, R.style.Theme_Translucent_NoTitleBar)
                                     dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
                                     dialog!!.setContentView(view)
+                                    // shuffle the keyboard
+
                                     val window: Window? = dialog!!.window
                                     val wlp = window?.attributes
 

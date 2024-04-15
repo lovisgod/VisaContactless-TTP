@@ -98,4 +98,5 @@ dependencies {
     // retrofit gson converter
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation 'com.github.devicesandtokens:ISW_EMV_UTIL_LIB:0.1'
+    implementation 'com.scottyab:rootbeer-lib:0.1.0'
 }

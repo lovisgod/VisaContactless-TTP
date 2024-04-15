@@ -4,6 +4,7 @@ package com.lovisgod.testVisaTTP.data
 import android.content.Context
 import com.lovisgod.testVisaTTP.SDKHelper
 import com.lovisgod.testVisaTTP.SDKHelper.contactlessConfiguration
+import com.lovisgod.testVisaTTP.handlers.HexUtil
 import com.lovisgod.testVisaTTP.handlers.StringManipulator
 import com.lovisgod.testVisaTTP.models.datas.ConfigInfoHelper.saveTerminalInfo
 import com.lovisgod.testVisaTTP.models.datas.IswHpCodes
@@ -20,11 +21,11 @@ class EmvDataKeyManager {
         val myData = contactlessConfiguration?.terminalData
 //        myData?.set("9F02", "100".encodeToByteArray()) // set the amount
 
-        myData?.set("9F1A", terminalInfo.terminalCountryCode.encodeToByteArray()) // set terminal country code
+        myData?.set("9F1A", HexUtil.parseHex(terminalInfo.terminalCountryCode)) // set terminal country code
 
-        myData?.set("5F2A", terminalInfo.transCurrencyCode.encodeToByteArray()) // set currency code
+        myData?.set("5F2A", HexUtil.parseHex(terminalInfo.transCurrencyCode)) // set currency code
 
-        myData?.set("9F35", byteArrayOf(0x22)) //Terminal Type
+        myData?.set("9F35", HexUtil.parseHex("22")) //Terminal Type
 
 //        myData?.set("9C", byteArrayOf(0x00)) //Transaction Type 00 - Purchase; 20 - Refund
 
@@ -33,7 +34,7 @@ class EmvDataKeyManager {
         myData?.set("9F39",  byteArrayOf(0x07))                          //POS Entry Mode
 
         //myData.put("9F39", new byte[]{0x07});                               //POS Entry Mode
-        myData?.set("9F33", terminalInfo.terminalCapabilities.encodeToByteArray()) //Terminal Capabilities
+        myData?.set("9F33", HexUtil.parseHex(terminalInfo.terminalCapabilities)) //Terminal Capabilities
 
         myData?.set("9F40", byteArrayOf(
             0x60.toByte(),
@@ -45,7 +46,7 @@ class EmvDataKeyManager {
         ) //Additional Terminal Capabilities
 
         val merchant = "${terminalInfo.cardAcceptorNameLocation}"
-        val merchant_byte = merchant.toByteArray()
+        val merchant_byte = HexUtil.parseHex(merchant)
         myData?.set("9F4E", merchant_byte) //Merchant Name and location
 
 
