@@ -87,7 +87,7 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
 
     fun pay (amount: String, readCardStates: ReadCardStates, context: Context) {
 
-        if (isRunningOnEmulator || isDevMode(this.context!!) || checkRooted(this.context!!)) {
+        if (isRunningOnEmulator || !isDevMode(this.context!!) || checkRooted(this.context!!)) {
             ContextCompat.getMainExecutor(this.context!!).execute {
                 Toast.makeText(this.context, "Device not supported", Toast.LENGTH_LONG).show()
             }
@@ -413,6 +413,7 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
                                     dialog =
                                         Dialog(this.context!!, R.style.Theme_Translucent_NoTitleBar)
                                     dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                                    dialog?.window?.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
                                     dialog!!.setContentView(view)
                                     // shuffle the keyboard
 
