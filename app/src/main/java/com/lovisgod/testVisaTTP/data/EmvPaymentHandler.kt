@@ -28,6 +28,7 @@ import com.lovisgod.testVisaTTP.handlers.KeyBoardClick
 import com.lovisgod.testVisaTTP.handlers.PPSEManager
 import com.lovisgod.testVisaTTP.handlers.PinKeyPadHandler
 import com.lovisgod.testVisaTTP.handlers.StringManipulator
+import com.lovisgod.testVisaTTP.handlers.TimerManager
 import com.lovisgod.testVisaTTP.handlers.checkRooted
 import com.lovisgod.testVisaTTP.handlers.isDevMode
 import com.lovisgod.testVisaTTP.handlers.isRunningOnEmulator
@@ -42,10 +43,11 @@ import com.visa.app.ttpkernel.Version
 import com.visa.vac.tc.emvconverter.Utils
 
 import java.io.IOException
+import java.sql.Time
 import java.util.Arrays
 import kotlin.random.Random
 
-class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick {
+class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick, TimerManager.TimerCallback {
 
     companion object {
 
@@ -164,6 +166,7 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
     override fun onSubmitButtonClick() {
         if (dialog != null && dialog!!.isShowing) {
             dialog?.dismiss()
+            TimerManager.stopTimer()
         }
         println("pin is ${clearPinText}")
         // calculate pin block based on the mode of pin
@@ -433,6 +436,9 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
                                     this.continueTransaction = false
                                     dialog?.show()
 
+                                    TimerManager.setTimerCallback(this)
+                                    TimerManager.startTimer()
+
                                 } else if (DF03.isNotEmpty() && (DF03 == "00")) {
                                     transactionContactlessResult?.let {
                                         val iccData = SDKHelper.getTransactionData(
@@ -505,6 +511,14 @@ class EmvPaymentHandler private constructor(): TransactionLogger, KeyBoardClick 
         } else {
             this.readCardStates?.onTransactionFailed("Transaction declined offline. Kindly try again with another interface")
         }
+    }
+
+    override fun onTimerFinished() {
+        if (dialog != null && dialog!!.isShowing) {
+            dialog?.dismiss()
+            TimerManager.stopTimer()
+        }
+        this.readCardStates?.onTransactionFailed("Transaction canceled, pin entry timeout")
     }
 
 }
